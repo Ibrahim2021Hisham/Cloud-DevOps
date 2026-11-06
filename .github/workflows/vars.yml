@@ -1,0 +1,93 @@
+
+name: Full Variables & Secrets Demo
+
+on:
+  push:
+
+# -------------------------------
+# WORKFLOW-LEVEL variables
+# Available to all jobs unless overridden
+# -------------------------------
+env:
+  APP_NAME: workflow-app
+  ENVIRONMENT: production
+  OWNER: workflow-owner
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+
+    # -------------------------------
+    # JOB-LEVEL variables
+    # Overrides workflow env
+    # -------------------------------
+    env:
+      ENVIRONMENT: job-env
+      DB_HOST: job-database
+      OWNER: job-owner
+
+    steps:
+      - name: Show workflow/job variables
+        run: |
+          echo "APP_NAME=$APP_NAME"
+          echo "ENVIRONMENT=$ENVIRONMENT"
+          echo "DB_HOST=$DB_HOST"
+          echo "OWNER=$OWNER"
+
+      - name: Step-level env example
+        env:
+          OWNER: step-owner
+          VERSION: 10.5
+        run: |
+          echo "OWNER=$OWNER"
+          echo "VERSION=$VERSION"
+          echo "APP_NAME still accessible = $APP_NAME"
+
+      - name: Repository variable example
+        run: |
+          echo "Repository variable API_URL = ${{ vars.API_URL }}"
+
+      - name: Secrets example
+        run: |
+          echo "API_KEY = ${{ secrets.API_KEY }}"
+
+      - name: Variable precedence demo
+        env:
+          ENVIRONMENT: step-env
+        run: |
+          echo "Step-level ENVIRONMENT = $ENVIRONMENT"
+          echo "Job-level DB_HOST = $DB_HOST"
+          echo "Workflow-level APP_NAME = $APP_NAME"
+          echo "OWNER variable = $OWNER"
+
+      - name: Show GitHub default variables
+        run: |
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "GITHUB_ACTOR=$GITHUB_ACTOR"
+          echo "GITHUB_WORKFLOW=$GITHUB_WORKFLOW"
+          echo "GITHUB_RUN_ID=$GITHUB_RUN_ID"
+          echo "GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER"
+          echo "GITHUB_JOB=$GITHUB_JOB"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+
+# ==================================================
+# WHEN TO USE EACH VARIABLE TYPE
+# ==================================================
+#
+# 1. env:
+#    Use for environment variables defined at workflow,
+#    job, or step level.
+#    Access: $VARIABLE_NAME in shell scripts
+#            ${{ env.VARIABLE_NAME }} in expressions
+#
+# 2. vars:
+#    Use for repository, organization, or environment
+#    configuration variables.
+#    Access: ${{ vars.VARIABLE_NAME }}
+#
+# 3. secrets:
+#    Use for sensitive information such as API keys,
+#    passwords, and access tokens.
+#    Access: ${{ secrets.SECRET_NAME }}
+#
+# ==================================================
