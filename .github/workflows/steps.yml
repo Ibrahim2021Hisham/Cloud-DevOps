@@ -53,7 +53,7 @@ jobs:
           echo "$PWD"
           echo "Bash shell executing..."
           echo "Hello $NAME from $CITY"
-          exit 1 # Will not break workflow
+          exit 1 # Will not break workflow failed
 
       # ---------------------------------------------------------
       # SH shell example
